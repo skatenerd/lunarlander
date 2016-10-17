@@ -1,65 +1,68 @@
 import sys, pygame, time
-from geometry import calculateIntersectPoint
+from geometry import segment_intersects_polyline
+
 pygame.init()
 
-size = width, height = 500, 500
-speed = [0, 0]
-black = pygame.Color('black')
-yellow = pygame.Color('yellow')
 
-terrain_points = ((0,height),(100,height-20), (width, height-10))
-terrain_segments = zip(terrain_points, terrain_points[1:])
+class Game(object):
+    def __init__(self):
+        self.width = 500
+        self.height = 500
+        self.size = (self.width, self.height)
+        self.speed = [0, 0]
+        self.darkblue = pygame.Color(0,0,50,255)
+        self.yellow = pygame.Color('yellow')
 
-screen = pygame.display.set_mode(size)
+        self.terrain_points = ((0,self.height),(100,self.height-50), (self.width, self.height-10))
+        self.terrain_segments = zip(self.terrain_points, self.terrain_points[1:])
 
-lander_sprite = pygame.image.load("lander.gif")
-lander_box = lander_sprite.get_rect().move(width/2, 0)
+        self.screen = pygame.display.set_mode(self.size)
+        self.lander_sprite = pygame.image.load("lander.gif")
+        self.lander_box = self.lander_sprite.get_rect().move(self.width/2, 0)
 
-gameRunning = True
+        self.gameRunning = True
 
-def intersects_polyline(box, polyline):
-    sides = [(box.topleft, box.topright), (box.topright, box.bottomright), (box.bottomright, box.bottomleft), (box.bottomleft, box.topleft)]
-    for side in sides:
-        for segment in polyline:
-            sideStart,sideEnd = side
-            segmentStart, segmentEnd = segment
-            if calculateIntersectPoint(sideStart, sideEnd, segmentStart, segmentEnd) is not None:
-                return True
-    return False
+    def touchedDown(self, old_lander_box, new_lander_box):
+       return segment_intersects_polyline((old_lander_box.center, new_lander_box.center), self.terrain_segments)
 
-def touchedDown(box, polyline):
-    return intersects_polyline(box, polyline) or (box.top > height)
+    def main(self):
+        while self.gameRunning:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
 
-while gameRunning:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT: sys.exit()
+            time.sleep(0.05)
 
-    time.sleep(0.05)
+            # KEYBOARD CHECKS
+            up_is_pressed =  pygame.key.get_pressed()[pygame.K_UP]
+            right_is_pressed =  pygame.key.get_pressed()[pygame.K_RIGHT]
+            left_is_pressed =  pygame.key.get_pressed()[pygame.K_LEFT]
 
-    # KEYBOARD CHECKS
-    up_is_pressed =  pygame.key.get_pressed()[pygame.K_UP]
-    right_is_pressed =  pygame.key.get_pressed()[pygame.K_RIGHT]
-    left_is_pressed =  pygame.key.get_pressed()[pygame.K_LEFT]
+            # VELOCITY ADJUSTMENT
+            original_fall_speed = self.speed[1]
+            original_lateral_speed = self.speed[0]
+            if up_is_pressed:
+                self.speed[1] = original_fall_speed - 0.5
+            else:
+                self.speed[1] = original_fall_speed + 0.5
 
-    # VELOCITY ADJUSTMENT
-    original_fall_speed = speed[1]
-    original_lateral_speed = speed[0]
-    if up_is_pressed:
-        speed[1] = original_fall_speed - 0.5
-    else:
-        speed[1] = original_fall_speed + 0.5
+            if right_is_pressed:
+                self.speed[0] = original_lateral_speed + 0.1
+            if left_is_pressed:
+                self.speed[0] = original_lateral_speed - 0.1
 
-    if right_is_pressed:
-        speed[0] = original_lateral_speed + 0.1
-    if left_is_pressed:
-        speed[0] = original_lateral_speed - 0.1
+            # MOVE THE SHIP!
+            old_lander_box = self.lander_box
+            new_lander_box = old_lander_box.move(self.speed)
 
-    # MOVE THE SHIP!
-    lander_box = lander_box.move(speed)
+            # Yuck, update state of object
+            self.lander_box = new_lander_box
 
-    # (RE-)DRAWING THE WORLD
-    screen.fill(black)
-    screen.blit(lander_sprite, lander_box)
-    pygame.draw.lines(screen, yellow, False, terrain_points)
-    pygame.display.flip()
-    gameRunning = not touchedDown(lander_box, terrain_segments)
+            # (RE-)-DRAWING THE WORLD
+            self.screen.fill(self.darkblue)
+            self.screen.blit(self.lander_sprite, self.lander_box)
+            pygame.draw.lines(self.screen, self.yellow, False, self.terrain_points)
+            pygame.display.flip()
+            self.gameRunning = not self.touchedDown(old_lander_box, new_lander_box)
+
+if __name__ == '__main__':
+    Game().main()

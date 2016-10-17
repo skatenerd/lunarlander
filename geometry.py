@@ -150,6 +150,18 @@ def calculateIntersectPoint(p1, p2, p3, p4):
   else:
     return None
 
+def any_segments_intersect(first_group, second_group):
+    for first_group_segment in first_group:
+        for second_group_segment in second_group:
+            first_start, first_end = first_group_segment
+            second_start, second_end = second_group_segment
+            if calculateIntersectPoint(first_start, first_end, second_start, second_end) is not None:
+                return True
+    return False
+
+def segment_intersects_polyline(segment, polyline):
+    return any_segments_intersect([segment], polyline)
+
 
 # Test script below...
 if __name__ == "__main__":
