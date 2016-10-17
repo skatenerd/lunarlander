@@ -1,3 +1,7 @@
+# WHAT IT LOOKS LIKE:
+
+![zoom zoom](http://i.imgur.com/QIszSmM.gif)
+
 # HOW TO INSTALL:
 
 ## Get pip:
