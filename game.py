@@ -13,7 +13,7 @@ terrain_segments = zip(terrain_points, terrain_points[1:])
 screen = pygame.display.set_mode(size)
 
 lander_sprite = pygame.image.load("lander.gif")
-lander_box = lander_sprite.get_rect()
+lander_box = lander_sprite.get_rect().move(width/2, 0)
 
 gameRunning = True
 
@@ -31,17 +31,19 @@ def touchedDown(box, polyline):
     return intersects_polyline(box, polyline) or (box.top > height)
 
 while gameRunning:
-    time.sleep(0.05)
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
 
+    time.sleep(0.05)
+
+    # KEYBOARD CHECKS
     up_is_pressed =  pygame.key.get_pressed()[pygame.K_UP]
     right_is_pressed =  pygame.key.get_pressed()[pygame.K_RIGHT]
     left_is_pressed =  pygame.key.get_pressed()[pygame.K_LEFT]
 
+    # VELOCITY ADJUSTMENT
     original_fall_speed = speed[1]
     original_lateral_speed = speed[0]
-
     if up_is_pressed:
         speed[1] = original_fall_speed - 0.5
     else:
@@ -52,9 +54,10 @@ while gameRunning:
     if left_is_pressed:
         speed[0] = original_lateral_speed - 0.1
 
-
+    # MOVE THE SHIP!
     lander_box = lander_box.move(speed)
 
+    # (RE-)DRAWING THE WORLD
     screen.fill(black)
     screen.blit(lander_sprite, lander_box)
     pygame.draw.lines(screen, yellow, False, terrain_points)
