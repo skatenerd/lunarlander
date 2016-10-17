@@ -47,9 +47,9 @@ class Game(object):
                 self.speed[1] = original_fall_speed + 0.5
 
             if right_is_pressed:
-                self.speed[0] = original_lateral_speed + 0.1
+                self.speed[0] = original_lateral_speed + 0.5
             if left_is_pressed:
-                self.speed[0] = original_lateral_speed - 0.1
+                self.speed[0] = original_lateral_speed - 0.5
 
             # MOVE THE SHIP!
             old_lander_box = self.lander_box
