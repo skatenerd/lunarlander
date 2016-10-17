@@ -1,5 +1,5 @@
 import sys, pygame, time
-from geometry import segment_intersects_polyline
+from geometry import box_intersects_polyline, segment_intersects_polyline
 
 pygame.init()
 
@@ -23,7 +23,8 @@ class Game(object):
         self.gameRunning = True
 
     def touchedDown(self, old_lander_box, new_lander_box):
-       return segment_intersects_polyline((old_lander_box.center, new_lander_box.center), self.terrain_segments)
+        return box_intersects_polyline(new_lander_box, self.terrain_segments) or \
+               segment_intersects_polyline((old_lander_box.center, new_lander_box.center), self.terrain_segments)
 
     def main(self):
         while self.gameRunning:
@@ -53,8 +54,6 @@ class Game(object):
             # MOVE THE SHIP!
             old_lander_box = self.lander_box
             new_lander_box = old_lander_box.move(self.speed)
-
-            # Yuck, update state of object
             self.lander_box = new_lander_box
 
             # (RE-)-DRAWING THE WORLD

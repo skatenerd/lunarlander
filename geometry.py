@@ -159,6 +159,10 @@ def any_segments_intersect(first_group, second_group):
                 return True
     return False
 
+def box_intersects_polyline(box, polyline):
+    sides = [(box.topleft, box.topright), (box.topright, box.bottomright), (box.bottomright, box.bottomleft), (box.bottomleft, box.topleft)]
+    return any_segments_intersect(sides, polyline)
+
 def segment_intersects_polyline(segment, polyline):
     return any_segments_intersect([segment], polyline)
 
