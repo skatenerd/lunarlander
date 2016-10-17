@@ -17,4 +17,10 @@ Follow instructions at: [https://pip.pypa.io/en/stable/installing/](https://pip.
 ## Run Game:
         python game.py
 
+## Potential Challenges For Students:
 
+1.  add a fuel meter
+1.  make it "crash" if it's going to fast on impact (tell the user they LOST)
+1.  make the "earth" a different color
+1.  add sounds
+1.  make a special landing "zone"
