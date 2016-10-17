@@ -151,13 +151,11 @@ def calculateIntersectPoint(p1, p2, p3, p4):
     return None
 
 def any_segments_intersect(first_group, second_group):
-    for first_group_segment in first_group:
-        for second_group_segment in second_group:
-            first_start, first_end = first_group_segment
-            second_start, second_end = second_group_segment
-            if calculateIntersectPoint(first_start, first_end, second_start, second_end) is not None:
-                return True
-    return False
+    def segmentsCollide(first_group_segment, second_group_segment):
+        first_start, first_end = first_group_segment
+        second_start, second_end = second_group_segment
+        return calculateIntersectPoint(first_start, first_end, second_start, second_end) is not None
+    return any(segmentsCollide(first_group_segment, second_group_segment) for first_group_segment in first_group for second_group_segment in second_group)
 
 def box_intersects_polyline(box, polyline):
     sides = [(box.topleft, box.topright), (box.topright, box.bottomright), (box.bottomright, box.bottomleft), (box.bottomleft, box.topleft)]
